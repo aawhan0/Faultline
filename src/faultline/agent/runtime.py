@@ -4,10 +4,7 @@ from dataclasses import dataclass
 from typing import Protocol
 
 from faultline.core.models import Diagnosis, Incident
-
-
-class InvestigationTools(Protocol):
-    def get_incident(self, incident_id: str) -> Incident: ...
+from faultline.mcp.client import EvidenceProvider
 
 
 class DiagnosisEngine(Protocol):
@@ -18,7 +15,7 @@ class DiagnosisEngine(Protocol):
 class AgentRuntime:
     """Coordinates incident investigation behind replaceable interfaces."""
 
-    tools: InvestigationTools
+    tools: EvidenceProvider
     diagnosis_engine: DiagnosisEngine
 
     def investigate(self, incident_id: str) -> Diagnosis:
