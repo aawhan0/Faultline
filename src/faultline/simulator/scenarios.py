@@ -1,3 +1,5 @@
+from datetime import UTC, datetime
+
 from faultline.core.models import Evidence, Incident, IncidentScenario
 
 
@@ -11,6 +13,7 @@ def database_pool_exhaustion() -> IncidentScenario:
             "deployment 8f31c2. Request latency increased and database connection waits "
             "appeared in application logs."
         ),
+        created_at=datetime(2026, 1, 1, tzinfo=UTC),
     )
 
     evidence = [
