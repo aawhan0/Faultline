@@ -4,12 +4,12 @@ from dataclasses import dataclass
 from typing import Protocol
 
 from faultline.agent.investigator import DeterministicInvestigator
-from faultline.core.models import Diagnosis, Incident
+from faultline.core.models import Diagnosis, Evidence, Incident
 from faultline.mcp.client import EvidenceProvider
 
 
 class DiagnosisEngine(Protocol):
-    def diagnose(self, incident: Incident) -> Diagnosis: ...
+    def diagnose(self, incident: Incident, evidence: list[Evidence]) -> Diagnosis: ...
 
 
 @dataclass(slots=True)
@@ -23,4 +23,4 @@ class AgentRuntime:
         investigator = DeterministicInvestigator(self.tools)
         investigation = investigator.investigate(incident_id)
         incident = self.tools.get_incident(investigation.incident_id)
-        return self.diagnosis_engine.diagnose(incident)
+        return self.diagnosis_engine.diagnose(incident, investigation.evidence)
