@@ -1,22 +1,16 @@
 from __future__ import annotations
 
-from faultline.core.models import Diagnosis, Incident
-from faultline.mcp.client import EvidenceProvider
+from faultline.core.models import Diagnosis, Evidence, Incident
 
 
 class EvidenceAwareBaselineEngine:
-    """Produces a deterministic diagnosis from retrieved incident evidence.
+    """Produces a deterministic diagnosis from collected incident evidence.
 
     This is intentionally a baseline implementation. A model-backed engine can
     replace it later without changing the agent's domain contracts.
     """
 
-    def __init__(self, tools: EvidenceProvider) -> None:
-        self._tools = tools
-
-    def diagnose(self, incident: Incident) -> Diagnosis:
-        evidence = self._tools.search_evidence(incident.id, "")
-
+    def diagnose(self, incident: Incident, evidence: list[Evidence]) -> Diagnosis:
         matching = [
             item
             for item in evidence
