@@ -4,7 +4,7 @@ from faultline.mcp.simulator_provider import SimulatorEvidenceProvider
 
 
 EXPECTED_ROOT_CAUSE = "Database connection-pool exhaustion caused by the latest deployment reducing database pool overflow capacity."
-INCIDENT_ID = "inc-db-pool-001"
+INCIDENT_ID = "INC-0001"
 
 
 def test_database_pool_incident_produces_evidence_backed_diagnosis() -> None:
@@ -20,8 +20,9 @@ def test_database_pool_incident_produces_evidence_backed_diagnosis() -> None:
     assert diagnosis.root_cause == EXPECTED_ROOT_CAUSE
     assert diagnosis.confidence >= 0.8
     assert set(diagnosis.evidence_ids) == {
-        "ev-log-001",
-        "ev-metric-001",
-        "ev-deploy-001",
+        "EV-001",
+        "EV-002",
+        "EV-003",
+        "EV-004",
     }
     assert diagnosis.recommended_action

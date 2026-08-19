@@ -6,10 +6,10 @@ from faultline.mcp.simulator_provider import SimulatorEvidenceProvider
 def test_provider_returns_known_incident() -> None:
     provider = SimulatorEvidenceProvider()
 
-    incident = provider.get_incident("inc-db-pool-001")
+    incident = provider.get_incident("INC-0001")
 
-    assert incident.id == "inc-db-pool-001"
-    assert "connection pool" in incident.title.lower()
+    assert incident.id == "INC-0001"
+    assert incident.title == "API login failures after deployment"
 
 
 def test_provider_rejects_unknown_incident() -> None:
@@ -22,7 +22,7 @@ def test_provider_rejects_unknown_incident() -> None:
 def test_provider_filters_evidence_by_query() -> None:
     provider = SimulatorEvidenceProvider()
 
-    evidence = provider.search_evidence("inc-db-pool-001", "pool")
+    evidence = provider.search_evidence("INC-0001", "pool")
 
     assert evidence
     assert all(
@@ -34,6 +34,6 @@ def test_provider_filters_evidence_by_query() -> None:
 def test_provider_returns_all_evidence_for_empty_query() -> None:
     provider = SimulatorEvidenceProvider()
 
-    evidence = provider.search_evidence("inc-db-pool-001", "")
+    evidence = provider.search_evidence("INC-0001", "")
 
-    assert len(evidence) == 5
+    assert len(evidence) == 4
