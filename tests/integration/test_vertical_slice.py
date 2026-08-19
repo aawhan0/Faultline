@@ -1,9 +1,9 @@
-from faultline.agent.baseline_engine import EvidenceAwareBaselineEngine
+from faultline.agent.diagnosis import DiagnosisEngine
 from faultline.agent.runtime import AgentRuntime
 from faultline.mcp.simulator_provider import SimulatorEvidenceProvider
 
 
-EXPECTED_ROOT_CAUSE = "Database connection pool exhaustion"
+EXPECTED_ROOT_CAUSE = "Database connection-pool exhaustion caused by the latest deployment reducing database pool overflow capacity."
 INCIDENT_ID = "inc-db-pool-001"
 
 
@@ -11,7 +11,7 @@ def test_database_pool_incident_produces_evidence_backed_diagnosis() -> None:
     tools = SimulatorEvidenceProvider()
     runtime = AgentRuntime(
         tools=tools,
-        diagnosis_engine=EvidenceAwareBaselineEngine(),
+        diagnosis_engine=DiagnosisEngine(),
     )
 
     diagnosis = runtime.investigate(INCIDENT_ID)
