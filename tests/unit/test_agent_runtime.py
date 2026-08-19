@@ -10,6 +10,9 @@ class FakeTools:
             description="Requests are failing after a deployment.",
         )
 
+    def search_evidence(self, incident_id: str, query: str):
+        return []
+
 
 class FakeDiagnosisEngine:
     def diagnose(self, incident: Incident) -> Diagnosis:
@@ -22,7 +25,7 @@ class FakeDiagnosisEngine:
         )
 
 
-def test_agent_runtime_investigates_incident() -> None:
+def test_agent_runtime_investigates_incident_through_provider_boundary() -> None:
     runtime = AgentRuntime(
         tools=FakeTools(),
         diagnosis_engine=FakeDiagnosisEngine(),
