@@ -1,4 +1,4 @@
-from faultline.agent.runtime import AgentRuntime
+from faultline.agent.runtime import AgentRuntime, DeterministicAgent
 from faultline.core.models import Diagnosis, Evidence, Incident
 
 
@@ -37,10 +37,15 @@ class FakeDiagnosisEngine:
 
 
 def test_agent_runtime_passes_investigation_evidence_to_diagnosis() -> None:
+    tools = FakeTools()
     engine = FakeDiagnosisEngine()
+
     runtime = AgentRuntime(
-        tools=FakeTools(),
-        diagnosis_engine=engine,
+        tools=tools,
+        agent=DeterministicAgent(
+            tools=tools,
+            diagnosis_engine=engine,
+        ),
     )
 
     diagnosis = runtime.investigate("inc-001")
