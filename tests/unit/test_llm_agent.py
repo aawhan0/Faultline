@@ -114,3 +114,76 @@ def test_llm_agent_rejects_ungrounded_evidence() -> None:
 
     with pytest.raises(ValueError, match="unknown evidence"):
         agent.investigate("INC-0001")
+
+
+
+class MarkdownJSONLLM:
+    def generate(self, prompt: str) -> str:
+        return """
+        ```json
+        {
+            "root_cause": "Database connection-pool exhaustion.",
+            "evidence_ids": ["EV-001"],
+            "confidence": 0.95,
+            "recommended_action": "Restore database connection pool capacity."
+        }
+        ```
+        """
+
+
+def test_llm_agent_accepts_markdown_wrapped_json() -> None:
+    agent = LLMAgent(
+        tools=FakeEvidenceProvider(),
+        llm=MarkdownJSONLLM(),
+    )
+
+    diagnosis = agent.investigate("INC-0001")
+
+    assert diagnosis.root_cause == "Database connection-pool exhaustion."
+    assert diagnosis.evidence_ids == ["EV-001"]
+
+
+class HighConfidenceLLM:
+    def generate(self, prompt: str) -> str:
+        return """
+        {
+            "root_cause": "Database connection-pool exhaustion.",
+            "evidence_ids": ["EV-001"],
+            "confidence": "High",
+            "recommended_action": "Restore database connection pool capacity."
+        }
+        """
+
+
+def test_llm_agent_normalizes_text_confidence() -> None:
+    agent = LLMAgent(
+        tools=FakeEvidenceProvider(),
+        llm=HighConfidenceLLM(),
+    )
+
+    diagnosis = agent.investigate("INC-0001")
+
+    assert diagnosis.confidence == 0.8
+
+
+class PercentageConfidenceLLM:
+    def generate(self, prompt: str) -> str:
+        return """
+        {
+            "root_cause": "Database connection-pool exhaustion.",
+            "evidence_ids": ["EV-001"],
+            "confidence": 95,
+            "recommended_action": "Restore database connection pool capacity."
+        }
+        """
+
+
+def test_llm_agent_normalizes_percentage_confidence() -> None:
+    agent = LLMAgent(
+        tools=FakeEvidenceProvider(),
+        llm=PercentageConfidenceLLM(),
+    )
+
+    diagnosis = agent.investigate("INC-0001")
+
+    assert diagnosis.confidence == 0.95

@@ -12,12 +12,12 @@ dependencies = [
     "uvicorn[standard]>=0.35,<1",
     "pydantic>=2.11,<3",
     "mcp>=1.13,<2",
+    "httpx>=0.28,<1",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=8.4,<9",
-    "httpx>=0.28,<1",
     "ruff>=0.12,<1",
 ]
 
@@ -31,3 +31,6 @@ line-length = 100
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
+markers = [
+    "integration: tests requiring integration with external services",
+]
