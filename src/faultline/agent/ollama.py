@@ -13,10 +13,12 @@ class OllamaProvider(LLMProvider):
         model: str = "qwen2.5:3b",
         base_url: str = "http://localhost:11434",
         timeout: float = 120.0,
+        temperature: float = 0.0,
     ) -> None:
         self.model = model
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
+        self.temperature = temperature
 
     def generate(self, prompt: str) -> str:
         response = httpx.post(
@@ -25,6 +27,9 @@ class OllamaProvider(LLMProvider):
                 "model": self.model,
                 "prompt": prompt,
                 "stream": False,
+                "options": {
+                    "temperature": self.temperature,
+                },
             },
             timeout=self.timeout,
         )

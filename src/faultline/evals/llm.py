@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 
 from faultline.core.models import Diagnosis, IncidentScenario
@@ -22,6 +23,40 @@ class EvaluationResult:
             and self.action_present
             and 0.0 <= self.confidence <= 1.0
         )
+
+
+def _matches_database_pool_root_cause(root_cause: str) -> bool:
+    """Check the causal components of the database-pool scenario."""
+
+    normalized = root_cause.lower()
+
+    database_match = "database" in normalized
+    pool_match = "pool" in normalized
+    overflow_match = "max_overflow" in normalized
+
+    zero_overflow_match = (
+        "zero-max_overflow" in normalized
+        or bool(
+            re.search(
+                r"max_overflow\s*"
+                r"(?:"
+                r"=\s*0"
+                r"|to\s+0"
+                r"|from\s+\d+(?:\.\d+)?\s+to\s+0"
+                r"|was\s+(?:reduced|set|changed)\s+to\s+0"
+                r"|(?:being\s+)?(?:reduced|set|changed)\s+to\s+0"
+                r")",
+                normalized,
+            )
+        )
+    )
+
+    return (
+        database_match
+        and pool_match
+        and overflow_match
+        and zero_overflow_match
+    )
 
 
 def evaluate_diagnosis(
@@ -48,13 +83,8 @@ def evaluate_diagnosis(
     else:
         evidence_precision = 0.0
 
-    root_cause = diagnosis.root_cause.lower()
-
-    root_cause_match = (
-        "database" in root_cause
-        and "pool" in root_cause
-        and "max_overflow" in root_cause
-        and "0" in root_cause
+    root_cause_match = _matches_database_pool_root_cause(
+        diagnosis.root_cause
     )
 
     return EvaluationResult(

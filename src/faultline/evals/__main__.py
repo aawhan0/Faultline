@@ -6,8 +6,8 @@ from faultline.agent.llm_agent import LLMAgent
 from faultline.agent.ollama import OllamaProvider
 from faultline.evals.aggregate import run_evaluations
 from faultline.evals.report import EvaluationReport
+from faultline.evals.scenarios import get_scenario, list_scenarios
 from faultline.mcp.simulator_provider import SimulatorEvidenceProvider
-from faultline.simulator.scenarios import database_pool_exhaustion
 
 
 def main() -> None:
@@ -25,13 +25,19 @@ def main() -> None:
         default="qwen2.5:3b",
         help="Ollama model to evaluate.",
     )
+    parser.add_argument(
+        "--scenario",
+        default="database_pool_exhaustion",
+        choices=list_scenarios(),
+        help="Incident scenario to evaluate.",
+    )
 
     args = parser.parse_args()
 
     if args.runs <= 0:
         parser.error("--runs must be greater than zero.")
 
-    scenario = database_pool_exhaustion()
+    scenario = get_scenario(args.scenario)
     provider = SimulatorEvidenceProvider()
 
     agent = LLMAgent(
@@ -49,7 +55,7 @@ def main() -> None:
     report = EvaluationReport(
         aggregate=aggregate,
         model=args.model,
-        scenario="database_pool_exhaustion",
+        scenario=args.scenario,
     )
 
     print(report.to_text())

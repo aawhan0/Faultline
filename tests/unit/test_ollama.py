@@ -29,6 +29,7 @@ def test_ollama_provider_generates_text(monkeypatch) -> None:
     assert captured["url"] == "http://localhost:11434/api/generate"
     assert captured["kwargs"]["json"]["model"] == "qwen2.5:3b"
     assert captured["kwargs"]["json"]["stream"] is False
+    assert captured["kwargs"]["json"]["options"]["temperature"] == 0.0
 
 
 def test_ollama_provider_rejects_http_errors(monkeypatch) -> None:
