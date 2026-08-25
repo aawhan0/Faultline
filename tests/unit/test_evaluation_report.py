@@ -28,11 +28,17 @@ def test_evaluation_report_formats_aggregate_results() -> None:
         runs=2,
     )
 
-    report = EvaluationReport(aggregate=aggregate)
+    report = EvaluationReport(
+        aggregate=aggregate,
+        model="test-model",
+        scenario="database_pool_exhaustion",
+    )
 
     text = report.to_text()
 
     assert "Faultline LLM Evaluation Report" in text
+    assert "Model: test-model" in text
+    assert "Scenario: database_pool_exhaustion" in text
     assert "Total runs: 2" in text
     assert "Passed runs: 2" in text
     assert "Pass rate: 100.00%" in text

@@ -28,8 +28,12 @@ def main() -> None:
 
     args = parser.parse_args()
 
+    if args.runs <= 0:
+        parser.error("--runs must be greater than zero.")
+
     scenario = database_pool_exhaustion()
     provider = SimulatorEvidenceProvider()
+
     agent = LLMAgent(
         tools=provider,
         llm=OllamaProvider(model=args.model),
@@ -42,7 +46,11 @@ def main() -> None:
         runs=args.runs,
     )
 
-    report = EvaluationReport(aggregate=aggregate)
+    report = EvaluationReport(
+        aggregate=aggregate,
+        model=args.model,
+        scenario="database_pool_exhaustion",
+    )
 
     print(report.to_text())
 
